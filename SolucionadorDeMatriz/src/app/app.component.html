@@ -54,16 +54,17 @@
   <main class="steps-results">
     <div *ngFor="let matrix of matrixHistory; let i = index" class="step-matrix">
       <div *ngFor="let line of matrix; let i1 = index" class="step-line">
-        <div *ngFor="let element of line; let i2 = index">
-          <span style="margin-right: 10px;">{{element | number : '1.0-2'}}</span>
+        <div *ngFor="let element of line; let i2 = index" class="step-item">
+          <span>{{element | number : '1.0-2'}}</span>
         </div>
-        <span style="margin-left: 10px;"> {{constantsHistory[i][i1] | number : '0.0-2'}} </span>
+        <span style="border-left: 1px solid gray; padding-left: 10px"> {{constantsHistory[i][i1] | number : '0.0-2'}} </span>
       </div>
       <mat-divider></mat-divider>
     </div>
   </main>
 </div>
 
-<div class="content" *ngIf="noSolution">
-  <h2>Não há solução única</h2>
+<div class="content" *ngIf="noSolution != null">
+  <h2 *ngIf="noSolution === 'infinity'">Não há solução única</h2>
+  <h2 *ngIf="noSolution === 'none'">Não há solução</h2>
 </div>

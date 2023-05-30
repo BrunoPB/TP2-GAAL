@@ -66,6 +66,7 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: start;
+  /* width: 200px; */
   gap: 5px;
 }
 
@@ -81,7 +82,15 @@ button {
 .step-line {
   display: flex;
   justify-content: space-between;
-  align-items: space-between;
+  align-items: start;
   flex-direction: row;
   gap: 5px;
+}
+
+.step-item {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: row;
+  min-width: 80px;
 }

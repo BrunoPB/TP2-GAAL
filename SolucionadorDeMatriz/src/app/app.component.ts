@@ -14,7 +14,7 @@ export class AppComponent {
   matrixHistory: number[][][] = [];
   constantsHistory: number[][] = [];
   showResult: boolean = false;
-  noSolution: boolean = false;
+  noSolution: "none" | "infinity" | null = null;
 
   constructor() {
     this.updateMatrixSize();
@@ -29,25 +29,33 @@ export class AppComponent {
     this.resultantMatrix = this.matrix.map((x) => x.slice());
     this.resultantConstants = this.constants.slice();
     this.showResult = false;
-    this.noSolution = false;
+    this.noSolution = null;
   }
 
   solve() {
-    this.noSolution = false;
+    this.noSolution = null;
     this.resultantMatrix = this.matrix.map((x) => x.slice());
     this.resultantConstants = this.constants.slice();
     this.matrixHistory = [];
+    this.constantsHistory = [];
     this.matrixHistory.push(this.resultantMatrix.map((x) => x.slice()));
+    this.constantsHistory.push(this.resultantConstants.slice());
 
     // Getting each line pivot and nullifying lines below using that pivot
     for (let i = 0; i < this.resultantMatrix.length; i++) {
       if (!this.getLinePivot(i)) return;
+      this.updateHistory();
+      if (this.checkForFullLineZero()) return;
       this.nullifyLinesToBottom(i, i);
+      this.updateHistory()
+      if (this.checkForFullLineZero()) return;
     }
 
     // Nullifying lines above each pivot -> Gauss-Jordan
     for (let i = this.resultantMatrix.length - 1; i > 0; i--) {
       this.nullifyLinesToTop(i);
+      this.updateHistory()
+      if (this.checkForFullLineZero()) return;
     }
 
     this.showResult = true;
@@ -65,8 +73,6 @@ export class AppComponent {
       this.resultantMatrix[line][i] /= pivotInitialValue;
     }
     this.resultantConstants[line] /= pivotInitialValue;
-    this.matrixHistory.push(this.resultantMatrix.map((x) => x.slice()));
-    this.constantsHistory.push(this.resultantConstants.slice());
     return true;
   }
 
@@ -77,7 +83,7 @@ export class AppComponent {
         return true;
       }
     }
-    this.noSolution = true;
+    this.noSolution = "infinity";
     return false;
   }
 
@@ -98,8 +104,6 @@ export class AppComponent {
       this.resultantConstants[i] -=
         multiplier * this.resultantConstants[baseLine];
     }
-    this.matrixHistory.push(this.resultantMatrix.map((x) => x.slice()));
-    this.constantsHistory.push(this.resultantConstants.slice());
   }
 
   nullifyLinesToTop(baseLine: number) {
@@ -112,8 +116,6 @@ export class AppComponent {
       this.resultantConstants[i] -=
         multiplier * this.resultantConstants[baseLine];
     }
-    this.matrixHistory.push(this.resultantMatrix.map((x) => x.slice()));
-    this.constantsHistory.push(this.resultantConstants.slice());
   }
 
   checkForNullInMatrix() {
@@ -123,6 +125,29 @@ export class AppComponent {
       }
     }
     return false;
+  }
+
+  checkForFullLineZero() {
+    for (let i = 0; i < this.resultantMatrix.length; i++) {
+      let lineSum: number = 0;
+      for (let j = 0; j < this.resultantMatrix.length; j++) {
+        lineSum += this.resultantMatrix[i][j];
+      }
+      if (lineSum == 0) {
+        if (this.resultantConstants[i] == 0) {
+          this.noSolution = "infinity";
+        } else {
+          this.noSolution = "none";
+        }
+        return true;
+      };
+    }
+    return false;
+  }
+
+  updateHistory() {
+    this.constantsHistory.push(this.resultantConstants.slice());
+    this.matrixHistory.push(this.resultantMatrix.map((x) => x.slice()));
   }
 
   trackByFn(index: any, item: any) {
