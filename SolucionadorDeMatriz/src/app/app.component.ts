@@ -14,7 +14,7 @@ export class AppComponent {
   matrixHistory: number[][][] = [];
   constantsHistory: number[][] = [];
   showResult: boolean = false;
-  noSolution: "none" | "infinity" | null = null;
+  noSolution: 'none' | 'infinity' | null = null;
 
   constructor() {
     this.updateMatrixSize();
@@ -47,14 +47,14 @@ export class AppComponent {
       this.updateHistory();
       if (this.checkForFullLineZero()) return;
       this.nullifyLinesToBottom(i, i);
-      this.updateHistory()
+      this.updateHistory();
       if (this.checkForFullLineZero()) return;
     }
 
     // Nullifying lines above each pivot -> Gauss-Jordan
     for (let i = this.resultantMatrix.length - 1; i > 0; i--) {
       this.nullifyLinesToTop(i);
-      this.updateHistory()
+      this.updateHistory();
       if (this.checkForFullLineZero()) return;
     }
 
@@ -83,7 +83,11 @@ export class AppComponent {
         return true;
       }
     }
-    this.noSolution = "infinity";
+    if (this.resultantConstants[line] == 0) {
+      this.noSolution = 'infinity';
+    } else {
+      this.noSolution = 'none';
+    }
     return false;
   }
 
@@ -135,12 +139,12 @@ export class AppComponent {
       }
       if (lineSum == 0) {
         if (this.resultantConstants[i] == 0) {
-          this.noSolution = "infinity";
+          this.noSolution = 'infinity';
         } else {
-          this.noSolution = "none";
+          this.noSolution = 'none';
         }
         return true;
-      };
+      }
     }
     return false;
   }
